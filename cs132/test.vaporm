@@ -1,0 +1,7 @@
+const vmt_MT4
+	:MT4.Start
+	:MT4.Change
+
+Main [in 0 out 3 
+MT4.Start [in 3 out 3 
+MT4.Change [in 3 out 0 
