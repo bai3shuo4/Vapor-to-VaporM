@@ -12,6 +12,9 @@ import java.lang.*;
 public class generate_interval extends VInstr.Visitor<Throwable> {
 
 	private final HashMap<String, Interval> interval = new HashMap<>();
+	private final HashMap<String, Label> label = new HashMap<>();
+	private final LinkedList<Label> codelabel = new LinkedList<>();
+
 	private VFunction v;
 	public generate_interval(VFunction v){
 		this.v = v;
@@ -30,11 +33,31 @@ public class generate_interval extends VInstr.Visitor<Throwable> {
 
 	}
 
+	public void generate_label() throws Throwable {
+
+		for(VCodeLabel current : v.labels){
+			codelabel.add(new Label(current.ident + ":", current.sourcePos.line));
+		}
+	}
+
 	public void readmap(){
 		for(Interval current : interval.values()){
 			System.out.print(current.name + " ");
 			System.out.print(Integer.toString(current.start) + " ");
 			System.out.print(Integer.toString(current.end) + " ");
+			System.out.println();
+		}
+
+		for(Label current : label.values()){
+			System.out.print(current.name + " ");
+			System.out.print(Integer.toString(current.line) + " ");
+			System.out.println();
+		}
+
+		for(VCodeLabel current : v.labels){
+			codelabel.add(new Label(current.ident + ":", current.sourcePos.line));
+			System.out.print(current.ident + " ");
+			System.out.print(current.sourcePos.line + " ");
 			System.out.println();
 		}
 	} 
@@ -152,10 +175,20 @@ public class generate_interval extends VInstr.Visitor<Throwable> {
 			Interval tmp = interval.get(v.value.toString());
 			tmp.changeEnd(v.sourcePos.line);
 		}
+
+		Label tmp = new Label(v.target.toString(), v.sourcePos.line);
+		label.put(v.target.toString(), tmp);
+
+			//System.out.println("-----------"  + v.target.toString());
 	}
 
 	public void visit(VGoto v) throws Throwable{ 
 
+		//System.out.println("-----------"  + v.target.toString());
+		if(v.target instanceof VAddr.Label){
+			Label tmp = new Label(v.target.toString(), v.sourcePos.line);
+			label.put(v.target.toString(), tmp);
+		}
 	}
 
 	public void visit(VReturn v) throws Throwable{
@@ -167,20 +200,31 @@ public class generate_interval extends VInstr.Visitor<Throwable> {
 
 		public static class Interval{
 
-		int start;
-		int end;
-		String name;
+			int start;
+			int end;
+			String name;
 
-		public Interval(String name, int start){
-			this.name = name;
-			this.start = start;
-			this.end = start;
+			public Interval(String name, int start){
+				this.name = name;
+				this.start = start;
+				this.end = start;
+			}
+
+			public void changeEnd(int end){
+				this.end = end;
+			}
 		}
 
-		public void changeEnd(int end){
-			this.end = end;
+		public static class Label{
+
+			int line;
+			String name;
+
+			public Label(String name, int line){
+				this.name = name;
+				this.line = line;
+			}
 		}
-	}
 
 
 }

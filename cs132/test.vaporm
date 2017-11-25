@@ -5,6 +5,8 @@ Main [in 0 out 0
 t.1 12 14 
 t.0 7 14 
 t.2 14 15 
+:null1 9 
+null1 11 
 Fac.ComputeFac [in 0 out 0 
 t.1 24 27 
 num 18 28 
@@ -13,3 +15,7 @@ this 18 27
 t.3 27 28 
 t.2 26 27 
 num_aux 21 30 
+:if1_else 20 
+:if1_end 22 
+if1_else 23 
+if1_end 29 
