@@ -1,7 +1,15 @@
-const vmt_MT4
-	:MT4.Start
-	:MT4.Change
+const vmt_Fac
+	:Fac.ComputeFac
 
-Main [in 0 out 3 
-MT4.Start [in 3 out 3 
-MT4.Change [in 3 out 0 
+Main [in 0 out 0 
+t.1 12 14 
+t.0 7 14 
+t.2 14 15 
+Fac.ComputeFac [in 0 out 0 
+t.1 24 27 
+num 18 28 
+t.0 19 20 
+this 18 27 
+t.3 27 28 
+t.2 26 27 
+num_aux 21 30 

@@ -71,6 +71,11 @@ public class V2VM extends VInstr.Visitor<Throwable>{
   			 	}
 
   			 System.out.println();
+
+         generate_interval generate = new generate_interval(function);
+         generate.generate();
+         generate.readmap();
+  			 
   			 }
   			 
 
