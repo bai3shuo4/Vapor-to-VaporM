@@ -75,6 +75,9 @@ public class V2VM extends VInstr.Visitor<Throwable>{
          generate_interval generate = new generate_interval(function);
          generate.generate();
          generate.readmap();
+
+         LinearScanAllocation lsa = new LinearScanAllocation(generate.interval);
+         lsa.readmap();
   			 
   			 }
   			 

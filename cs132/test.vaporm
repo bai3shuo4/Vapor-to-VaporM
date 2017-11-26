@@ -7,6 +7,12 @@ t.0 7 14
 t.2 14 15 
 :null1 9 
 null1 11 
+t.0 7
+t.1 12
+t.2 14
+t.1 14
+t.0 14
+t.2 15
 Fac.ComputeFac [in 0 out 0 
 t.1 24 27 
 num 18 28 
@@ -19,3 +25,17 @@ num_aux 21 30
 :if1_end 22 
 if1_else 23 
 if1_end 29 
+num 18
+this 18
+t.0 19
+num_aux 21
+t.1 24
+t.2 26
+t.3 27
+t.0 20
+t.1 27
+this 27
+t.2 27
+num 28
+t.3 28
+num_aux 30

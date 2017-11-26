@@ -11,7 +11,7 @@ import java.lang.*;
 
 public class generate_interval extends VInstr.Visitor<Throwable> {
 
-	private final HashMap<String, Interval> interval = new HashMap<>();
+	final HashMap<String, Interval> interval = new HashMap<>();
 	private final HashMap<String, Label> label = new HashMap<>();
 	private final LinkedList<Label> codelabel = new LinkedList<>();
 
@@ -105,7 +105,6 @@ public class generate_interval extends VInstr.Visitor<Throwable> {
 			}
 		}
 
-
 	}
 
 	public void visit(VBuiltIn v) throws Throwable{
@@ -117,13 +116,15 @@ public class generate_interval extends VInstr.Visitor<Throwable> {
 			}
 		}
 
-		if(v.dest instanceof VVarRef.Local){
-			if(interval.containsKey(v.dest.toString())){
-				Interval tmp = interval.get(v.dest.toString());
-				tmp.changeEnd(v.sourcePos.line);
-			}
-			else{
-				interval.put(v.dest.toString(), new Interval(v.dest.toString(), v.sourcePos.line));
+		if(v.dest != null){
+			if(v.dest instanceof VVarRef.Local){
+				if(interval.containsKey(v.dest.toString())){
+					Interval tmp = interval.get(v.dest.toString());
+					tmp.changeEnd(v.sourcePos.line);
+				}
+				else{
+					interval.put(v.dest.toString(), new Interval(v.dest.toString(), v.sourcePos.line));
+				}
 			}
 		}
 	}
@@ -198,22 +199,6 @@ public class generate_interval extends VInstr.Visitor<Throwable> {
 		}
 	}
 
-		public static class Interval{
-
-			int start;
-			int end;
-			String name;
-
-			public Interval(String name, int start){
-				this.name = name;
-				this.start = start;
-				this.end = start;
-			}
-
-			public void changeEnd(int end){
-				this.end = end;
-			}
-		}
 
 		public static class Label{
 
