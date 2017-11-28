@@ -90,12 +90,31 @@ public class LinearScanAllocation{
 		}
 	}
 
-	public String findFreeRegister(){
+	public String findFreeRegister(boolean call){
 		String register_name = "error";
+		if(call){
+			if(!s_register.isEmpty()){
+				register_name = s_register.getFirst();
+				s_register.removeFirst();
+				local = local + 1;
+			}
+			else{
+				register_name = "local[" + Integer.toString(local) + "]";
+				local = local + 1;
+
+			}
+
+			return register_name;
+		}
 
 		if(!t_register.isEmpty()){
 			register_name = t_register.getFirst();
 			t_register.removeFirst();
+		}
+		else if(!s_register.isEmpty()){
+			register_name = s_register.getFirst();
+			s_register.removeFirst();
+			local = local + 1;
 		}
 
 		return register_name;
@@ -103,8 +122,13 @@ public class LinearScanAllocation{
 
 	public void returnFreeRegister(String register_name){
 
-		t_register.add(0, register_name);    				//put it in the head
+		if(register_name.charAt(1) == 't'){
+			t_register.add(0, register_name);    				//put it in the head
+		}
 
+		if(register_name.charAt(1) == 's'){
+			s_register.add(0, register_name);
+		}
 	}
 
 
@@ -116,11 +140,11 @@ public class LinearScanAllocation{
 		for(Map.Entry<String, Integer> interval : startpoint.entrySet()){
 			String i = interval.getKey();
 			ExpireOldIntervals(i);
-			if(active.size() == 9)					//considering only t register
+			if(active.size() == 17)					//considering t and s register
 				SpillAtInterval(i);
 			else{
 				//register[i] <--- free register
-				register.put(i, findFreeRegister());
+				register.put(i, findFreeRegister(interval.getValue().between_call));
 				//i ---> active
 				active.add(i);
 				//sort active by end point

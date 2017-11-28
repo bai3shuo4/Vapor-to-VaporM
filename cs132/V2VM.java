@@ -170,11 +170,26 @@ public class V2VM extends VInstr.Visitor<Throwable>{
 	}
 
 	public void visit(VBranch v) throws Throwable{
+      String value = v.value.toString();
+
+      if(allocate_map.get(value) != null){
+          value = allocate_map.get(value);
+      }
+
+      if(v.positive){
+          System.out.print("if ");
+      }
+      else{
+          System.out.print("if0 ");
+      }
+
+      System.out.print(value + " goto " + v.target.toString());
+      System.out.println();
 
 	}
 
 	public void visit(VGoto v) throws Throwable{ 
-
+      System.out.println("goto " + v.target.toString());
 	}
 
 	public void visit(VReturn v) throws Throwable{
