@@ -33,7 +33,35 @@ public class generate_betweencall extends VInstr.Visitor<Throwable> {
 				tmp.getValue().changeCall();
 			}
 		}
-		
+
+	}
+
+	public void visit(VAssign v) throws Throwable{
+
+	}
+
+	public void visit(VBuiltIn v) throws Throwable{
+
+	}
+
+	public void visit(VMemWrite v) throws Throwable{
+
+	}
+
+	public void visit(VMemRead v) throws Throwable{
+
+	}
+
+	public void visit(VBranch v) throws Throwable{
+
+	}
+
+	public void visit(VGoto v) throws Throwable{ 
+
+	}
+
+	public void visit(VReturn v) throws Throwable{
+
 	}
 
 

@@ -67,15 +67,21 @@ public class LinearScanAllocation{
 
 	public void readMap(){
 
-		for(Map.Entry<String, Integer> tmp : startpoint.entrySet()){
-			System.out.print(tmp.getKey() + " ");
-			System.out.print(tmp.getValue().toString());
-			System.out.println();
-		}
+		// for(Map.Entry<String, Integer> tmp : startpoint.entrySet()){
+		// 	System.out.print(tmp.getKey() + " ");
+		// 	System.out.print(tmp.getValue().toString());
+		// 	System.out.println();
+		// }
 
-		for(Map.Entry<String, Integer> tmp : endpoint.entrySet()){
+		// for(Map.Entry<String, Integer> tmp : endpoint.entrySet()){
+		// 	System.out.print(tmp.getKey() + " ");
+		// 	System.out.print(tmp.getValue().toString());
+		// 	System.out.println();
+		// }
+
+		for(Map.Entry<String, String> tmp : allocate_map.entrySet()){
 			System.out.print(tmp.getKey() + " ");
-			System.out.print(tmp.getValue().toString());
+			System.out.print(tmp.getValue());
 			System.out.println();
 		}
 	}
@@ -144,7 +150,7 @@ public class LinearScanAllocation{
 				SpillAtInterval(i);
 			else{
 				//register[i] <--- free register
-				register.put(i, findFreeRegister(interval.getValue().between_call));
+				register.put(i, findFreeRegister(this.interval.get(interval.getKey()).between_call));
 				//i ---> active
 				active.add(i);
 				//sort active by end point
@@ -154,12 +160,23 @@ public class LinearScanAllocation{
 	}
 
 	public void ExpireOldIntervals(String i){
+		// String[] remove = new String[17];
+		// for(String j : active){
+		// 	if(endpoint.get(j) >= startpoint.get(i))
+		// 		return;
+		// 	//remove j from active;
+		// 	active.remove(j);
+		// 	//add register[j] to pool of free register
+		// 	returnFreeRegister(register.get(j));
+		// }
 
-		for(String j : active){
+		Iterator<String> iterator = active.iterator();
+		while(iterator.hasNext()){
+			String j = iterator.next();
 			if(endpoint.get(j) >= startpoint.get(i))
 				return;
 			//remove j from active;
-			active.remove(j);
+			iterator.remove();
 			//add register[j] to pool of free register
 			returnFreeRegister(register.get(j));
 		}

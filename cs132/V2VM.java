@@ -13,6 +13,7 @@ public class V2VM extends VInstr.Visitor<Throwable>{
   		//static boolean find_out;
 			//static int out_num;
   static HashMap<String, String> allocate_map;
+  static int local;
 	public static void main(String [] args) throws Throwable{
 
   		
@@ -73,14 +74,17 @@ public class V2VM extends VInstr.Visitor<Throwable>{
 
              generate_interval generate = new generate_interval(function);
              generate.generate();
+
+             generate_betweencall betweencall = new generate_betweencall(generate.interval, function);
+             betweencall.run_generate_betweencall();
              //generate.readmap();
 
              LinearScanAllocation lsa = new LinearScanAllocation(generate.interval);
-             //lsa.readMap();
              lsa.LinearScanRegisterAllocation();
              lsa.getMap();
+             //lsa.readMap();
              allocate_map = new HashMap<>(lsa.allocate_map);
-
+             local = lsa.local;
              // for(Map.Entry<String, String> tmp : allocate_map.entrySet()){
              //    System.out.print(tmp.getKey() + " ");
              //    System.out.print(tmp.getValue());
@@ -91,6 +95,23 @@ public class V2VM extends VInstr.Visitor<Throwable>{
              System.out.println();
              //add a[]
              //add local[]
+             for(int i = 0; i < lsa.local; i++){
+                if(i > 7)
+                    break;
+                System.out.println("local[" + Integer.toString(i) + "] = $s" + Integer.toString(i));
+
+             }
+
+             int count = 0;
+             for(VVarRef tmp : function.params){
+                if(count < 4)
+                  System.out.println(allocate_map.get(tmp.toString()) + " = $a" + Integer.toString(count++));
+                else
+                  System.out.println(allocate_map.get(tmp.toString()) + " = in[" + Integer.toString(count++) + "]");
+             }
+
+
+
 
              LinkedList<String> label_instruction = new LinkedList<>();
              LinkedList<Integer> label_line = new LinkedList<>();
@@ -109,6 +130,9 @@ public class V2VM extends VInstr.Visitor<Throwable>{
                 }
                 instruction.accept(v2vm);
              }
+
+
+             
     			 
     			//int in = function.stack.in;
     			//int out = function.stack.out;
@@ -125,6 +149,35 @@ public class V2VM extends VInstr.Visitor<Throwable>{
 	
 
 	public void visit(VCall v) throws Throwable {
+    int count = 0;
+      for(VOperand params : v.args){
+          String name = params.toString();
+          if(allocate_map.get(name) != null){
+            if(count <= 3)
+              System.out.println("$a" + Integer.toString(count++) + " = " + allocate_map.get(name));
+            else
+              System.out.println("out[" + Integer.toString(count++) + "] = " + allocate_map.get(name));
+          }
+
+          else{
+            if(count <= 3)
+              System.out.println("$a" + Integer.toString(count++) + " = " + name);
+            else
+              System.out.println("out[" + Integer.toString(count++) + "] = " + name);
+          }
+      }
+
+      String call_addr = v.addr.toString();
+      if(allocate_map.get(call_addr) != null){
+          System.out.println("call " + allocate_map.get(call_addr));
+      }
+      else{
+        System.out.println("call " + call_addr);
+      }
+
+      System.out.println(allocate_map.get(v.dest.toString()) + " = $v0");
+
+
 		
 	}
 
@@ -162,11 +215,24 @@ public class V2VM extends VInstr.Visitor<Throwable>{
 	}
 
 	public void visit(VMemWrite v) throws Throwable{
+      String source = v.source.toString();
+      if(allocate_map.get(source) != null){
+          source = allocate_map.get(source);
+      }
 
+      if(v.dest instanceof VMemRef.Global){
+          VMemRef.Global tmp = (VMemRef.Global)(v.dest);
+          System.out.println("[" + allocate_map.get(tmp.base.toString()) + "+" + tmp.byteOffset + "] = " + source);
+
+      }
 	}
 
 	public void visit(VMemRead v) throws Throwable{
+      if(v.source instanceof VMemRef.Global){
+          VMemRef.Global tmp = (VMemRef.Global)(v.source);
+          System.out.println(allocate_map.get(v.dest.toString()) + " = [" + allocate_map.get(tmp.base.toString()) + "+" + tmp.byteOffset + "]");
 
+      }
 	}
 
 	public void visit(VBranch v) throws Throwable{
@@ -193,20 +259,30 @@ public class V2VM extends VInstr.Visitor<Throwable>{
 	}
 
 	public void visit(VReturn v) throws Throwable{
-      System.out.print("ret ");
 
       if(v.value != null){
           String source = v.value.toString();
           if(allocate_map.get(source) == null){
-              System.out.print(source);
+              System.out.println("$v0 = " + source);
           }
 
           else{
-              System.out.print(allocate_map.get(source));
+              System.out.println("$v0 = " + allocate_map.get(source));
           }
       }
 
-      System.out.println();
+      for(int i = 0; i < local; i++){
+                if(i > 7)
+                    break;
+                System.out.println("$s" + Integer.toString(i) + " = local[" + Integer.toString(i) + "]");
+
+             }
+
+      System.out.println("ret ");
+
+      
+
+      //System.out.println();
 	}
 }
 
