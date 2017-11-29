@@ -77,6 +77,13 @@ public class V2VM extends VInstr.Visitor<Throwable>{
 
              generate_betweencall betweencall = new generate_betweencall(generate.interval, function);
              betweencall.run_generate_betweencall();
+
+             generate_while g_while = new generate_while(generate.interval, function);
+             g_while.run_generatewhile();
+
+             ///////////////////
+
+             ///////////////////
              //generate.readmap();
 
              LinearScanAllocation lsa = new LinearScanAllocation(generate.interval);
@@ -106,8 +113,11 @@ public class V2VM extends VInstr.Visitor<Throwable>{
              for(VVarRef tmp : function.params){
                 if(count < 4)
                   System.out.println(allocate_map.get(tmp.toString()) + " = $a" + Integer.toString(count++));
-                else
-                  System.out.println(allocate_map.get(tmp.toString()) + " = in[" + Integer.toString(count++) + "]");
+                else{
+                  int index = count-4;
+                  System.out.println(allocate_map.get(tmp.toString()) + " = in[" + Integer.toString(index) + "]");
+                  count++;
+                }
              }
 
 
@@ -155,15 +165,21 @@ public class V2VM extends VInstr.Visitor<Throwable>{
           if(allocate_map.get(name) != null){
             if(count <= 3)
               System.out.println("$a" + Integer.toString(count++) + " = " + allocate_map.get(name));
-            else
-              System.out.println("out[" + Integer.toString(count++) + "] = " + allocate_map.get(name));
+            else{
+              int index = count-4;
+              System.out.println("out[" + Integer.toString(index) + "] = " + allocate_map.get(name));
+              count++;
+            }
           }
 
           else{
             if(count <= 3)
               System.out.println("$a" + Integer.toString(count++) + " = " + name);
-            else
-              System.out.println("out[" + Integer.toString(count++) + "] = " + name);
+            else{
+              int index = count-4;
+              System.out.println("out[" + Integer.toString(index) + "] = " + name);
+              count++;
+            }
           }
       }
 
