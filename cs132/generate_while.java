@@ -23,7 +23,7 @@ public class generate_while {
 		HashMap<Integer, while_range> while_map = new HashMap<>();
 		for(VCodeLabel tmp : v.labels){
 			String label = tmp.ident;
-			if(!(label.substring(0,5).equals("while")))
+			if(label.length() <= 5 || !(label.substring(0,5).equals("while")))
 				continue;
 			int index = label.charAt(5);
 			if(while_map.containsKey(index)){
